@@ -25,9 +25,15 @@ services:
     ports:
       - "3123:3123"
     depends_on:
-      - vault # Ensure Vault starts before your app
+      - vault
     extra_hosts:
       - "ps8:192.168.1.108"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3123/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   mcpo:
     image: ghcr.io/open-webui/mcpo:main
@@ -38,4 +44,5 @@ services:
       - ./config.json:/app/config.json  # relative to ./mcpo folder
     command: --api-key "top-secret" --config /app/config.json
     depends_on:
-      - mcp-server
+      mcp-server:
+        condition: service_healthy
