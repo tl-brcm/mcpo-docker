@@ -1,0 +1,9 @@
+{
+  "mcpServers": 
+  {
+    "siteminder-policy-mcp": {
+      "type": "sse",
+      "url": "http://siteminder-policy-mcp:3123/sse"
+    }
+  }
+}

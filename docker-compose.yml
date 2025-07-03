@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    ports:
+      - "8200:8200"
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=devroot
+      - VAULT_ADDR=http://0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK # Required for Vault to run in dev mode
+    command: server -dev -dev-root-token-id=devroot -dev-listen-address=0.0.0.0:8200
+  mcp-server:
+    build:
+      context: ../siteminder-policy-mcp   # <-- relative to /mcpo
+    container_name: siteminder-policy-mcp
+    environment:
+      - SITE_MINDER_BASE_URL=https://ps8:8443
+      - SITE_MINDER_USERNAME=siteminder
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_TOKEN=devroot
+      - SITE_MINDER_PASSWORD_VAULT_PATH=secret/siteminder/credentials
+    ports:
+      - "3123:3123"
+    depends_on:
+      - vault # Ensure Vault starts before your app
+    extra_hosts:
+      - "ps8:192.168.1.108"
+
+  mcpo:
+    image: ghcr.io/open-webui/mcpo:main
+    container_name: mcpo
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config.json:/app/config.json  # relative to ./mcpo folder
+    command: --api-key "top-secret" --config /app/config.json
+    depends_on:
+      - mcp-server
