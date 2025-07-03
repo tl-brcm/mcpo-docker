@@ -17,8 +17,8 @@ services:
       context: ../siteminder-policy-mcp   # <-- relative to /mcpo
     container_name: siteminder-policy-mcp
     environment:
-      - SITE_MINDER_BASE_URL=https://ps8:8443
-      - SITE_MINDER_USERNAME=siteminder
+      - SITE_MINDER_BASE_URL=https://ps2.demo-broadcom.com
+      - SITE_MINDER_USERNAME=nbear
       - VAULT_ADDR=http://vault:8200
       - VAULT_TOKEN=devroot
       - SITE_MINDER_PASSWORD_VAULT_PATH=secret/siteminder/credentials
